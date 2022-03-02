@@ -1,0 +1,32 @@
+# Make a pie chart of the specified report
+# Borrowed heavily from
+#   https://stackoverflow.com/questions/31896718/generation-of-pie-chart-using-gnuplot
+# (last accessed: 2019-02-11)
+
+# Expected: ARG1 looks like "YYYYMMDD-astro.sum"
+
+stats ARG1 u 2 nooutput      # get STATS_sum (sum of column 2)
+
+ang(x)=x*360.0/STATS_sum        # get angle (grades)
+perc(x)=x*100.0/STATS_sum       # get percentage
+
+set size ratio -1                 # square canvas
+set xrange [-1.1:2.9]
+set yrange [-1.1:1.1]
+set style fill solid 0.3 border lc rgb "black"
+set lmargin at screen 0.05
+
+unset border
+unset tics
+unset key
+set title ARG1[1:4]."-".ARG1[5:6]."-".ARG1[7:8]." - /".ARG1[10:14]
+
+Ai = 0.0; Bi = 0.0;             # init angle
+mid = 0.0;                      # mid angle
+i = 0; j = 0;                   # color
+yi  = 1.0; yi2 = 1.0;           # label position
+
+plot ARG1 u (0):(0):(1):(Ai):(Ai=Ai+ang($2)):(i=i+1) with circle linecolor var,\
+     ''   u (1.45):(yi=yi-2.0/STATS_records):(sprintf("%-16s (%4.1f TB)", stringcolumn(1), $2)) w labels left font "Courier,",\
+     ''   u (1.35):(yi2=yi2-2.0/STATS_records):(j=j+1) w p pt 5 ps 2 linecolor var,\
+     ''   u (mid=Bi+ang($2)*pi/360.0, Bi=2.0*mid-Bi, 0.9*cos(mid)):(0.9*sin(mid)):(sprintf('%.1f\%', perc($2))) w labels center
