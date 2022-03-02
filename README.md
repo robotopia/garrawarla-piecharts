@@ -1,6 +1,11 @@
 # garrawarla-piecharts
 Making piecharts from Pawsey usage reports
 
+## Requires
+
+* Gnuplot
+* Awk
+
 ## Usage
 
 From the Robin Hood reports that are emailed out, cut and paste the part relevant to your group into a
